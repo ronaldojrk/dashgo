@@ -1,41 +1,17 @@
 import { Box, Button, Checkbox, Flex, Heading, Icon, Spinner, Table, Tbody, Td, Text, Th, Thead, Tr, useBreakpointValue } from "@chakra-ui/react";
 import { RiAddLine, RiPencilLine } from "react-icons/ri";
-import { useQuery } from 'react-query'
 
 import { Header } from "../../components/Header";
 import { Pagination } from "../../components/Pagination";
 import { SideBar } from "../../components/Sidebar";
 import Link from 'next/link';
-import { useEffect } from "react";
+import { userUsers } from "../../services/hooks/useUsers";
 
 
 export default function UserList() {
 
 
-  const { data, isLoading, error } = useQuery('users', async () => {
-
-    const response = await fetch('http://localhost:3000/api/users')
-    const data = await response.json()
-
-
-    const users = data.users.map(user => {
-      return {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        createAt: new Date(user.createAt).toLocaleDateString('pt-BR', {
-          day: '2-digit',
-          month: 'long',
-          year: 'numeric'
-        })
-      };
-    });
-
-
-    return users;
-  }, {
-    staleTime: 1000 * 5,
-  })
+  const { data, isLoading, isFetching, error } = userUsers();
 
   //console.log(query)
 
@@ -57,7 +33,10 @@ export default function UserList() {
         <Box flex="1" borderRadius={8} bg="gray.800" p="8">
           <Flex mb="8" justify="space-between" align="center">
 
-            <Heading size="lg" fontWeight="normal">usuarios</Heading>
+            <Heading size="lg" fontWeight="normal">
+              usuarios
+              {!isLoading && isFetching && <Spinner size="sm" color="gray.500" ml="4" />}
+            </Heading>
 
             <Link href="/users/create" passHref>
               <Button
@@ -128,7 +107,14 @@ export default function UserList() {
                 </Tbody>
               </Table>
 
-              <Pagination />
+              <Pagination
+                totalCountRegisters={200}
+                currentPage={5}
+                onPageChange={() => { }}
+
+
+
+              />
 
             </>
           )}
